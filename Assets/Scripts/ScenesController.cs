@@ -3,7 +3,14 @@ using UnityEngine.SceneManagement;
 
 public class Scenes : MonoBehaviour
 {
-  
+  public void CutScene()
+    {
+        if (GameManager.instance.isSolved1 & GameManager.instance.isSolved2 & GameManager.instance.isSolved3 & GameManager.instance.isSolved4)
+        {
+            SceneManager.LoadScene(6);
+
+        }
+    }
     public void OpenMenu()
     {
         SceneManager.LoadScene(0);

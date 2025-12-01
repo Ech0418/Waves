@@ -4,12 +4,12 @@ using UnityEngine.SceneManagement;
 
 public class GoToCDMemory : MonoBehaviour
 {
-    public GameObject light;
+    public GameObject light1;
    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        light.SetActive(false);
+        light1.SetActive(false);
         
     }
 
@@ -23,13 +23,13 @@ public class GoToCDMemory : MonoBehaviour
     {
         if (!GameManager.instance.isSolved1)
         {
-            light.SetActive(true);
+            light1.SetActive(true);
         }
     }
     // Метод, который вызывается, когда курсор покидает объект
     public void OnMouseExit()
     {
-        light.SetActive(false);
+        light1.SetActive(false);
     }
     // Метод, который вызывается при клике на объект
     public void OnMouseDown()

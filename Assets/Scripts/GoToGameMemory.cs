@@ -21,6 +21,7 @@ public class GoToGameMemory : MonoBehaviour
     // Метод, который вызывается при наведении курсора на объект
     public void OnMouseEnter()
     {
+        Debug.Log(GameManager.instance.isSolved3);
         if (!GameManager.instance.isSolved3)
         {
             light.SetActive(true);

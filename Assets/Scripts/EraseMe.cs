@@ -9,13 +9,14 @@ public class EraseMe : MonoBehaviour
 {
     public float brushSize;
     public float brushStrength;
-    private float percentage;
+    private float percentage = 99.85f;
+    private bool isPickUped;
 
     private Texture2D texture;
-    private SpriteRenderer sr;  
+    private SpriteRenderer sr;
     private Color[] originalPixelColors;
     private Color[] newPixelColors;
-    
+
     Vector2 mousePos;
     Vector2 localPos;
 
@@ -28,10 +29,17 @@ public class EraseMe : MonoBehaviour
     public int erasedCount;
     public AudioSource eraseSound;
 
+    
+
+    public GameObject clothController;
+     FollowMouse followMouse;
+
     void Start()
     {
+        followMouse = clothController.GetComponent<FollowMouse>();        
+
         sr = GetComponent<SpriteRenderer>();
-        
+
         Texture2D sourceTexture = sr.sprite.texture;
         texture = Instantiate(sourceTexture);
         texture.Apply();
@@ -41,35 +49,40 @@ public class EraseMe : MonoBehaviour
 
         sr.sprite = Sprite.Create(texture, sr.sprite.rect, new Vector2(0.5f, 0.5f));
     }
+    
 
     public float GetErasedPercentage(float alphaThreshold = 0.1f)
     {
         erasedCount = 0;
         int totalPixels = newPixelColors.Length;
-
         for (int i = 0; i < totalPixels; i++)
         {
             if (newPixelColors[i].a < alphaThreshold)
-            {
                 erasedCount++;
-            }
         }
-        return (float)erasedCount;
+        return (float)erasedCount / totalPixels;
     }
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.Mouse0))
+        if (followMouse.isPickedUp)
         {
-            GetTextureCoordinates();          
-        }
+            Debug.Log("qq");
+            if (Input.GetKey(KeyCode.Mouse0))
+            {
+                GetTextureCoordinates();
+            }
 
-        slider.value = GetErasedPercentage();
 
-        if (erasedCount >= percentage)
-        {
-            Debug.Log("win");
-            SceneManager.LoadScene(1);
+            slider.value = GetErasedPercentage();
+            float erasedPercent = 100 * GetErasedPercentage();
+            slider.value = erasedPercent;
+            Debug.Log(erasedPercent);
+            if (erasedPercent >= percentage)
+                if (erasedCount >= percentage)
+                {
+                    SceneManager.LoadScene(1);
+                }
         }
     }
 
@@ -77,7 +90,7 @@ public class EraseMe : MonoBehaviour
     {
         mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         localPos = transform.InverseTransformPoint(mousePos);
-        
+
         Vector2 pivot = sr.sprite.pivot;
         float pixelsPerUnit = sr.sprite.pixelsPerUnit;
 
@@ -89,9 +102,9 @@ public class EraseMe : MonoBehaviour
     public void Draw(int centerx, int centery)
     {
         eraseSound.Play();
-        int radius = Mathf.CeilToInt(brushSize/2);
+        int radius = Mathf.CeilToInt(brushSize / 2);
 
-        for(int y = -radius; y <= radius; y++)
+        for (int y = -radius; y <= radius; y++)
         {
             int py = centery + y;
             if (py < 0 || py >= texture.height) continue;
@@ -99,11 +112,11 @@ public class EraseMe : MonoBehaviour
             for (int x = -radius; x <= radius; x++)
             {
                 int px = centerx + x;
-                if(px < 0 || px >= texture.width) continue;
-                
+                if (px < 0 || px >= texture.width) continue;
+
                 float distance = Mathf.Sqrt(x * x + y * y);
                 if (distance > radius) continue;
-               
+
                 index = py * texture.width + px;
                 pixelColor = newPixelColors[index];
 
